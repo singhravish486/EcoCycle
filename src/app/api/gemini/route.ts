@@ -17,23 +17,23 @@ function formatResponse(text: string): string {
   if (!text || text.trim() === '') {
     return "- No response generated\n- Please try again with a different question";
   }
-  
+
   // If the response already has bullet points or numbers, return it as is
   if (text.includes('\n- ') || text.includes('\n• ') || /\n\d+\./.test(text)) {
     return text;
   }
-  
+
   // Split by sentences and convert to bullet points
   // This is more aggressive than splitting by paragraphs
   let sentences = text.split(/(?<=[.!?])\s+/);
-  
+
   // Filter out empty sentences and very short ones (likely not complete sentences)
   sentences = sentences.filter(s => s.trim().length > 10);
-  
+
   // Group sentences into chunks of 1-2 sentences to make reasonable bullet points
   const bulletPoints = [];
   let currentPoint = "";
-  
+
   for (const sentence of sentences) {
     if (currentPoint.length === 0) {
       currentPoint = sentence;
@@ -46,15 +46,15 @@ function formatResponse(text: string): string {
       currentPoint = sentence;
     }
   }
-  
+
   // Add the last point if there is one
   if (currentPoint.length > 0) {
     bulletPoints.push(currentPoint);
   }
-  
+
   // Limit to 6 points maximum
   const limitedPoints = bulletPoints.slice(0, 6);
-  
+
   // Convert to bullet point format
   return limitedPoints.map(p => `- ${p.trim()}`).join('\n');
 }
@@ -62,7 +62,7 @@ function formatResponse(text: string): string {
 export async function POST(request: Request) {
   try {
     const { message, language = 'english' } = await request.json();
-    
+
     if (!GEMINI_API_KEY) {
       console.error('GEMINI_API_KEY is not defined in environment variables');
       return NextResponse.json(
@@ -70,20 +70,21 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
-    
+
     // Get the appropriate prompt based on language
     const promptTemplate = languagePrompts[language as keyof typeof languagePrompts] || languagePrompts.english;
     const fullPrompt = promptTemplate + message;
-    
+
+    // Using Gemini Pro on v1 API - Most compatible with Google Cloud Console keys
     const GEMINI_MODEL = "gemini-1.5-pro";
-    
+
     const response = await axios.post(
       `https://generativelanguage.googleapis.com/v1/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
       {
-        contents: [{ 
-          parts: [{ 
-            text: fullPrompt + " FINAL REMINDER: Your response MUST be formatted as bullet points or a numbered list. Each point should be brief (1-2 sentences). DO NOT write paragraphs. Maximum 5-6 points total." 
-          }] 
+        contents: [{
+          parts: [{
+            text: fullPrompt + " FINAL REMINDER: Your response MUST be formatted as bullet points or a numbered list. Each point should be brief (1-2 sentences). DO NOT write paragraphs. Maximum 5-6 points total."
+          }]
         }],
         generationConfig: {
           temperature: 0.7,
@@ -91,12 +92,12 @@ export async function POST(request: Request) {
         }
       }
     );
-    
+
     let aiReply = response.data.candidates[0].content.parts[0].text;
-    
+
     // Ensure the response is formatted as bullet points
     aiReply = formatResponse(aiReply);
-    
+
     return NextResponse.json({ reply: aiReply });
   } catch (error) {
     const err = error as any;

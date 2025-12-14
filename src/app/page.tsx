@@ -12,7 +12,7 @@ export default function LandingPage() {
       <Scene3D />
       <main className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-green-100 via-green-300 via-green-400 to-green-200">
         <div className="w-full flex flex-col items-center justify-center py-24">
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -20,7 +20,7 @@ export default function LandingPage() {
           >
             Eco Cycle
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -34,7 +34,7 @@ export default function LandingPage() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="mb-8"
           >
-            <Link href="/auth">
+            <Link href="/auth" prefetch={true}>
               <button className="px-8 py-4 bg-green-600 text-white rounded-full shadow-lg text-xl font-semibold hover:bg-green-700 transition transform hover:scale-105">
                 Get Started
               </button>
