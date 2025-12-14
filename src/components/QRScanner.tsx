@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useZxing } from 'react-zxing';
 import { FaTimes, FaCamera, FaExclamationTriangle, FaSync } from 'react-icons/fa';
 
@@ -12,14 +12,15 @@ export default function QRScanner({ onResult, onClose }: QRScannerProps) {
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [usingFrontCamera, setUsingFrontCamera] = useState(false);
 
-  // Configure camera constraints to prefer back camera
-  const constraints = {
+  // Use useMemo to make constraints reactive to camera changes
+  const constraints = useMemo(() => ({
     video: {
-      facingMode: usingFrontCamera ? "user" : "environment", // "environment" is back camera
+      facingMode: usingFrontCamera ? "user" : "environment",
       width: { ideal: 1280 },
       height: { ideal: 720 }
-    }
-  };
+    },
+    audio: false
+  }), [usingFrontCamera]);
 
   const { ref } = useZxing({
     onDecodeResult(result) {
@@ -35,7 +36,8 @@ export default function QRScanner({ onResult, onClose }: QRScannerProps) {
         setCameraError(`Camera error: ${error.message}`);
       }
     },
-    constraints: constraints
+    constraints: constraints,
+    timeBetweenDecodingAttempts: 300
   });
 
   // Function to toggle between front and back cameras
@@ -152,6 +154,7 @@ export default function QRScanner({ onResult, onClose }: QRScannerProps) {
 
       <div className="relative overflow-hidden rounded-lg" style={{ maxWidth: '300px', height: '300px' }}>
         <video
+          key={usingFrontCamera ? 'front' : 'back'}
           ref={ref}
           className="w-full h-full object-cover"
           style={{ transform: usingFrontCamera ? 'scaleX(-1)' : 'none' }} // Only mirror for front camera
