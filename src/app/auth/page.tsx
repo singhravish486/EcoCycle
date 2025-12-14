@@ -67,13 +67,11 @@ export default function AuthPage() {
 
         // Auto-login after signup (no email confirmation needed)
         setMessage("Account created successfully! Redirecting...");
-        setTimeout(() => {
-          router.push("/dashboard");
-        }, 1000);
+        router.push("/dashboard");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        setMessage("Logged in successfully!");
+        setMessage("Logged in successfully! Redirecting...");
         router.push("/dashboard");
       }
     } catch (err: any) {
