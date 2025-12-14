@@ -7,7 +7,7 @@ interface ClientOnlyProps {
 }
 
 /**
- * Component that only renders its children on the client side
+ * Component that only renders its children on client side
  * This helps avoid hydration mismatches with localStorage and other browser APIs
  */
 export default function ClientOnly({ children }: ClientOnlyProps) {
