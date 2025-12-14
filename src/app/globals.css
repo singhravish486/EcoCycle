@@ -24,3 +24,14 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Add this to your globals.css file */
+input, textarea {
+  color: #333333 !important; /* Dark gray text */
+}
+
+input::placeholder {
+  color: #666666 !important; /* Medium gray for placeholder */
+  opacity: 1;
+}
+

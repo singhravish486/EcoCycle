@@ -1,0 +1,42 @@
+/* More aggressive CSS to hide elements when map is in fullscreen */
+:fullscreen {
+  z-index: 9999 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: white !important;
+}
+
+/* Hide everything else when any element is in fullscreen */
+:fullscreen ~ * {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Hide specific elements */
+:fullscreen ~ .dashboard-chatbot,
+:fullscreen ~ .activity-history {
+  display: none !important;
+}
+
+/* Use a class-based approach as well */
+body:has(:fullscreen) .dashboard-chatbot,
+body:has(:fullscreen) .activity-history {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Add this class-based selector */
+body.map-fullscreen .dashboard-chatbot,
+body.map-fullscreen .activity-history {
+  display: none !important;
+}
+
+
+
