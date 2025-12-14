@@ -11,6 +11,7 @@ export default function QRScanner({ onResult, onClose }: QRScannerProps) {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [usingFrontCamera, setUsingFrontCamera] = useState(false);
+  const [paused, setPaused] = useState(true);
 
   // Use useMemo to make constraints reactive to camera changes
   const constraints = useMemo(() => ({
@@ -37,12 +38,22 @@ export default function QRScanner({ onResult, onClose }: QRScannerProps) {
       }
     },
     constraints: constraints,
-    timeBetweenDecodingAttempts: 300
+    timeBetweenDecodingAttempts: 300,
+    paused: paused
   });
+
+  // Start camera when component mounts
+  useEffect(() => {
+    setPaused(false);
+  }, []);
 
   // Function to toggle between front and back cameras
   const toggleCamera = () => {
-    setUsingFrontCamera(!usingFrontCamera);
+    setPaused(true);
+    setTimeout(() => {
+      setUsingFrontCamera(!usingFrontCamera);
+      setPaused(false);
+    }, 100);
   };
 
   useEffect(() => {
